@@ -1,0 +1,9 @@
+body {
+  font-family: monospace;
+}
+
+#user-stats {
+  position: fixed;
+  top: 0px;
+  right: 0px;
+}
