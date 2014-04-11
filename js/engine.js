@@ -33,40 +33,51 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
       });
   }
 
+  function moveUser(x, y){
+    // checks map bounds
+    if(User.x == 0 || User.x == mapBounds.width - 1
+      || User.y == 0 || User.y == mapBounds.height - 1){
+        return false;
+      }
+
+    //
+    var newX = User.x + x;
+    var newY = User.y + y;
+
+    var location = Map.getLocation(newX, newY);
+
+    if(location == '#' || location == 'o'){
+      return false;
+    }
+
+    User.x = newX;
+    User.y = newY;
+
+    return true;
+  }
+
   function moveUserLeft(){
-    if(User.x == 0)
-      return;
-
-    User.x -= 1;
-
-    tick(true);
+    if(moveUser(-1, 0)){
+      tick(true);
+    }
   }
 
   function moveUserUp(){
-    if(User.y == 0)
-      return;
-
-    User.y -= 1;
-
-    tick(true);
+    if(moveUser(0, -1)){
+      tick(true);
+    }
   }
 
   function moveUserRight(){
-    if(User.x == mapBounds.width - 1)
-      return;
-
-    User.x += 1;
-
-    tick(true);
+    if(moveUser(1, 0)){
+      tick(true);
+    }
   }
 
   function moveUserDown(){
-    if(User.y == mapBounds.height - 1)
-      return;
-
-    User.y += 1;
-
-    tick(true);
+    if(moveUser(0, 1)){
+      tick(true);
+    }
   }
 
   function userAction(){
@@ -122,8 +133,8 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
   var Engine = {
 
     initialize: function(){
-      User.x = 0;
-      User.y = 0;
+      User.x = 1;
+      User.y = 1;
 
       UserStats.initialize({
         money: 1000,

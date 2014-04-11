@@ -251,8 +251,13 @@ define(
         getUserLocation: function(){
 
           return map[actor.y][actor.x];
+        },
+
+        getLocation: function(x, y){
+
+          return map[y][x];
         }
-    };
+  };
 
     return Map;
 
