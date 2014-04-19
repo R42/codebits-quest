@@ -25,7 +25,7 @@ define(['userStats'], function(UserStats) {
 
     doAction: function() {
       if(this.canUse()) {
-        UserStats.decreaseStat('money', this.price);
+        UserStats.increaseStat('money', -this.price);
 
         for(var s in this.actions) {
           if(this.actions[s] === 0) {

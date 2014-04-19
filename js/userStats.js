@@ -53,13 +53,6 @@ define(['jquery'], function($) {
       }
     },
 
-    decreaseStat: function(stat, val) {
-      stats[stat] -= val;
-      if(stats[stat] < 0) {
-        stats[stat] = 0;
-      }
-    },
-
     /**
      * Drawing methods
      */
