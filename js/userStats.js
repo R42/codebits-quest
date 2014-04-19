@@ -1,6 +1,24 @@
-define(['jquery'], function($) {
+define(['jquery', 'events'], function($, EVENTS) {
   var container = $('<div>').prop('id', 'user-stats');
   var stats = {};
+  var statsBoundaries = {
+    money: {
+      min: 0,
+      max: 1000
+    },
+    stamina: {
+      min: 0,
+      max: 100
+    },
+    hunger: {
+      min: 0,
+      max: 100
+    },
+    thirst: {
+      min: 0,
+      max: 100
+    }
+  };
   var WIDTH = 20;
 
   /**
@@ -26,6 +44,21 @@ define(['jquery'], function($) {
     container.append($('<span>').html(line)).append('<br>');
   }
 
+  function checkStatBoundaries(stat, newVal) {
+    var currVal = stats[stat];
+    if(newVal > currVal && newVal >= statsBoundaries[stat].max) {
+      stats[stat] = statsBoundaries[stat].max;
+      EVENTS.stats.trigger('maxreached', [stat, statsBoundaries[stat].max]);
+      return false;
+    }
+    if(newVal < currVal && newVal <= statsBoundaries[stat].min) {
+      stats[stat] = statsBoundaries[stat].min;
+      EVENTS.stats.trigger('minreached', [stat, statsBoundaries[stat].min]);
+      return false;
+    }
+    return true;
+  }
+
   var UserStats = {
     /**
      * Constructor function
@@ -47,9 +80,8 @@ define(['jquery'], function($) {
     },
 
     changeStat: function(stat, val) {
-      stats[stat] += val;
-      if(stats[stat] < 0) {
-        stats[stat] = 0;
+      if(checkStatBoundaries(stat, stats[stat] + val)) {
+        stats[stat] += val;
       }
     },
 
