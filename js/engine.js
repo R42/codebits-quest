@@ -101,9 +101,9 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
   }
 
   function updateUserStats(){
-    UserStats.increaseStat('hunger', 1);
-    UserStats.increaseStat('thirst', 1);
-    UserStats.increaseStat('stamina', -1);
+    UserStats.changeStat('hunger', 1);
+    UserStats.changeStat('thirst', 1);
+    UserStats.changeStat('stamina', -1);
   }
 
   function updateWorldClock(){

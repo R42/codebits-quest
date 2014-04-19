@@ -43,7 +43,7 @@ define(['userStats', 'clock'], function(UserStats, Clock) {
             UserStats.setStat(s, 0);
           }
           else {
-            UserStats.increaseStat(s, talk.actions[s]);
+            UserStats.changeStat(s, talk.actions[s]);
           }
         }
 

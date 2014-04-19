@@ -46,7 +46,7 @@ define(['jquery'], function($) {
       stats[stat] = value;
     },
 
-    increaseStat: function(stat, val) {
+    changeStat: function(stat, val) {
       stats[stat] += val;
       if(stats[stat] < 0) {
         stats[stat] = 0;

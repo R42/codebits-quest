@@ -25,14 +25,14 @@ define(['userStats'], function(UserStats) {
 
     doAction: function() {
       if(this.canUse()) {
-        UserStats.increaseStat('money', -this.price);
+        UserStats.changeStat('money', -this.price);
 
         for(var s in this.actions) {
           if(this.actions[s] === 0) {
             UserStats.setStat(s, 0);
           }
           else {
-            UserStats.increaseStat(s, this.actions[s]);
+            UserStats.changeStat(s, this.actions[s]);
           }
         }
 
