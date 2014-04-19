@@ -1,6 +1,7 @@
 requirejs.config({
   paths: {
     'jquery'         : 'lib/jquery-2.1.0.min',
+    'EventEmitter'   : 'lib/EventEmitter-4.0.3.min',
 
     'engine'         : 'js/engine',
     'map'            : 'js/map',
