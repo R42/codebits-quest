@@ -111,7 +111,7 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'popup
     }
 
     else if(typeof userLocation === 'object'
-      && userLocation.hasPopup){
+      && userLocation.popup){
         gameMode = GAME_MODE_POPUP;
         currentPopup = userLocation;
         userLocation.popup.doAction(function(){
