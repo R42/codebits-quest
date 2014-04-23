@@ -110,6 +110,8 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'popup
       currentPopup.keyPressed('action');
     }
 
+    var userLocation = Map.getUserLocation();
+
     else if(typeof userLocation === 'object'
       && userLocation.popup){
         gameMode = GAME_MODE_POPUP;
