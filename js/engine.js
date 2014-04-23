@@ -42,12 +42,6 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
   }
 
   function moveUser(x, y){
-    // checks map bounds
-    if(User.x == 0 || User.x == mapBounds.width - 1
-      || User.y == 0 || User.y == mapBounds.height - 1){
-        return false;
-      }
-
     //
     var newX = User.x + x;
     var newY = User.y + y;
@@ -57,6 +51,12 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
     if(location == '#' || location == 'o'){
       return false;
     }
+
+    // checks map bounds
+    /*if(User.x == 0 || User.x == mapBounds.width - 1
+      || User.y == 0 || User.y == mapBounds.height - 1){
+        return false;
+    }*/
 
     User.x = newX;
     User.y = newY;
