@@ -105,6 +105,7 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
   }
 
   function userAction(){
+    var updateClock = true;
     var userLocation = Map.getUserLocation();
 
     if(gameMode == GAME_MODE_POPUP){
@@ -116,22 +117,22 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
         currentPopup = userLocation.popup;
         userLocation.popup.doAction(function(){
           gameMode = GAME_MODE_PLAYING;
+          tick(false, false);
         });
+        tick(false, true);
       }
-    else if(typeof userLocation === 'object' &&
-      typeof userLocation.getType === 'function'){
+    else if(typeof userLocation === 'object'){
 
-        if(userLocation.getType() === 'event'){
+      if(typeof userLocation.getType === 'function' &&
+        userLocation.getType() === 'event'){
           Clock.setTime(userLocation.getActiveEvent().endDate);
-        }
+          tick(false, true);
       }
-    else if(typeof userLocation === 'object' &&
-      typeof userLocation.doAction === 'function'){
-
+      else if(typeof userLocation.doAction === 'function'){
         userLocation.doAction();
+        tick(false, true);
       }
-
-    tick(false);
+    }
   }
 
   function updateUserStats(){
@@ -158,12 +159,13 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
     }
   }
 
-  function tick(updateStats){
+  function tick(updateStats, updateClock){
 
     tickCount += 1;
 
-    updateWorldClock();
-
+    if(updateClock){
+      updateWorldClock();
+    }
     updateWorld(updateStats);
   }
 
