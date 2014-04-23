@@ -15,6 +15,8 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'popup
 
   var gameMode;
 
+  var currentPopup;
+
   function initializeInput(){
     $(document).keydown(function(event){
       switch(event.which){
@@ -63,48 +65,72 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'popup
   }
 
   function moveUserLeft(){
-    if(moveUser(-1, 0)){
-      tick(true);
+    if(gameMode == GAME_MODE_POPUP){
+      currentPopup.keyPressed('left');
+    } else if(gameMode == GAME_MODE_POPUP){
+      if(moveUser(-1, 0)){
+        tick(true);
+      }
     }
   }
 
   function moveUserUp(){
-    if(moveUser(0, -1)){
-      tick(true);
+    if(gameMode == GAME_MODE_POPUP){
+      currentPopup.keyPressed('up');
+    } else if(gameMode == GAME_MODE_POPUP){
+      if(moveUser(0, -1)){
+        tick(true);
+      }
     }
   }
 
   function moveUserRight(){
-    if(moveUser(1, 0)){
-      tick(true);
+    if(gameMode == GAME_MODE_POPUP){
+      currentPopup.keyPressed('right');
+    } else if(gameMode == GAME_MODE_POPUP){
+      if(moveUser(1, 0)){
+        tick(true);
+      }
     }
   }
 
   function moveUserDown(){
-    if(moveUser(0, 1)){
-      tick(true);
+    if(gameMode == GAME_MODE_POPUP){
+      currentPopup.keyPressed('down');
+    } else if(gameMode == GAME_MODE_POPUP){
+      if(moveUser(0, 1)){
+        tick(true);
+      }
     }
   }
 
   function userAction(){
 
-    Popup.set("Title", "Message");
-    gameMode = GAME_MODE_POPUP;
+    if(gameMode == GAME_MODE_POPUP){
+      currentPopup.keyPressed('action');
+    }
 
-    var userLocation = Map.getUserLocation();
-
-    if(typeof userLocation === 'object'
-      && typeof userLocation.doAction === 'function'){
-
-        userLocation.doAction();
+    else if(typeof userLocation === 'object'
+      && userLocation.hasPopup){
+        gameMode = GAME_MODE_POPUP;
+        currentPopup = userLocation;
+        userLocation.popup.doAction(function(){
+          gameMode = GAME_MODE_PLAYING;
+        });
       }
 
-    if(typeof userLocation === 'object'
+    else if(typeof userLocation === 'object'
       && typeof userLocation.getType === 'function'){
 
         if(userLocation.getType() === 'event'){
           Clock.setTime(userLocation.getActiveEvent().endDate);
         }
+      }
+
+    else if(typeof userLocation === 'object'
+      && typeof userLocation.doAction === 'function'){
+
+        userLocation.doAction();
       }
 
     tick(false);
@@ -152,7 +178,7 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'popup
       gameMode = GAME_MODE_PLAYING;
 
       Popup.initialize();
-      
+
       User.x = 1;
       User.y = 1;
 
