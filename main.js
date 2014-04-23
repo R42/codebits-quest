@@ -10,7 +10,8 @@ requirejs.config({
     'stage'          : 'js/objects/stage',
     'clock'          : 'js/clock',
     'gameInformation': 'js/gameInformation',
-    'layout'         : 'js/layout'
+    'layout'         : 'js/layout',
+    'popup'          : 'js/popup'
   },
 
   shim: {

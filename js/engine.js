@@ -1,4 +1,4 @@
-define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], function($, Map, UserStats, GameInformation, User, Clock){
+define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'popup'], function($, Map, UserStats, GameInformation, User, Clock, Popup){
   var mapElem;
 
   var statsElem;
@@ -8,6 +8,12 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
   var tickCount = 0;
 
   var SECONDS_PER_TICK = 10; // seconds
+
+  var GAME_MODE_PLAYING = 0;
+
+  var GAME_MODE_POPUP = 1;
+
+  var gameMode;
 
   function initializeInput(){
     $(document).keydown(function(event){
@@ -81,6 +87,10 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
   }
 
   function userAction(){
+
+    Popup.set("Title", "Message");
+    gameMode = GAME_MODE_POPUP;
+
     var userLocation = Map.getUserLocation();
 
     if(typeof userLocation === 'object'
@@ -107,8 +117,9 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
   }
 
   function updateWorldClock(){
-
-    Clock.addTime(SECONDS_PER_TICK);
+    if(gameMode === GAME_MODE_PLAYING){
+      Clock.addTime(SECONDS_PER_TICK);
+    }
   }
 
   function updateWorld(updateStats){
@@ -118,7 +129,11 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
 
     Map.draw();
     UserStats.draw();
-    GameInformation.draw();
+    if(gameMode === GAME_MODE_PLAYING){
+      GameInformation.draw();
+    } else if(gameMode === GAME_MODE_POPUP){
+      Popup.draw();
+    }
   }
 
   function tick(updateStats){
@@ -133,6 +148,11 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
   var Engine = {
 
     initialize: function(){
+
+      gameMode = GAME_MODE_PLAYING;
+
+      Popup.initialize();
+      
       User.x = 1;
       User.y = 1;
 
@@ -156,6 +176,7 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
       $('#container').append(Map.getContainer());
       $('#container').append(UserStats.getContainer());
       $('#container').append(GameInformation.getContainer());
+      $('#container').append(Popup.getContainer());
 
       initializeInput();
 
