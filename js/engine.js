@@ -1,4 +1,4 @@
-define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'popup'], function($, Map, UserStats, GameInformation, User, Clock, Popup){
+define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], function($, Map, UserStats, GameInformation, User, Clock){
   var mapElem;
 
   var statsElem;
@@ -67,7 +67,7 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'popup
   function moveUserLeft(){
     if(gameMode == GAME_MODE_POPUP){
       currentPopup.keyPressed('left');
-    } else if(gameMode == GAME_MODE_POPUP){
+    } else if(gameMode == GAME_MODE_PLAYING){
       if(moveUser(-1, 0)){
         tick(true);
       }
@@ -77,7 +77,7 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'popup
   function moveUserUp(){
     if(gameMode == GAME_MODE_POPUP){
       currentPopup.keyPressed('up');
-    } else if(gameMode == GAME_MODE_POPUP){
+    } else if(gameMode == GAME_MODE_PLAYING){
       if(moveUser(0, -1)){
         tick(true);
       }
@@ -87,7 +87,7 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'popup
   function moveUserRight(){
     if(gameMode == GAME_MODE_POPUP){
       currentPopup.keyPressed('right');
-    } else if(gameMode == GAME_MODE_POPUP){
+    } else if(gameMode == GAME_MODE_PLAYING){
       if(moveUser(1, 0)){
         tick(true);
       }
@@ -97,7 +97,7 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'popup
   function moveUserDown(){
     if(gameMode == GAME_MODE_POPUP){
       currentPopup.keyPressed('down');
-    } else if(gameMode == GAME_MODE_POPUP){
+    } else if(gameMode == GAME_MODE_PLAYING){
       if(moveUser(0, 1)){
         tick(true);
       }
@@ -105,32 +105,28 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'popup
   }
 
   function userAction(){
+    var userLocation = Map.getUserLocation();
 
     if(gameMode == GAME_MODE_POPUP){
       currentPopup.keyPressed('action');
     }
-
-    var userLocation = Map.getUserLocation();
-
-    else if(typeof userLocation === 'object'
-      && userLocation.popup){
+    else if(typeof userLocation === 'object' &&
+      userLocation.popup){
         gameMode = GAME_MODE_POPUP;
-        currentPopup = userLocation;
+        currentPopup = userLocation.popup;
         userLocation.popup.doAction(function(){
           gameMode = GAME_MODE_PLAYING;
         });
       }
-
-    else if(typeof userLocation === 'object'
-      && typeof userLocation.getType === 'function'){
+    else if(typeof userLocation === 'object' &&
+      typeof userLocation.getType === 'function'){
 
         if(userLocation.getType() === 'event'){
           Clock.setTime(userLocation.getActiveEvent().endDate);
         }
       }
-
-    else if(typeof userLocation === 'object'
-      && typeof userLocation.doAction === 'function'){
+    else if(typeof userLocation === 'object' &&
+      typeof userLocation.doAction === 'function'){
 
         userLocation.doAction();
       }
@@ -159,8 +155,6 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'popup
     UserStats.draw();
     if(gameMode === GAME_MODE_PLAYING){
       GameInformation.draw();
-    } else if(gameMode === GAME_MODE_POPUP){
-      Popup.draw();
     }
   }
 
@@ -178,8 +172,6 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'popup
     initialize: function(){
 
       gameMode = GAME_MODE_PLAYING;
-
-      Popup.initialize();
 
       User.x = 1;
       User.y = 1;
@@ -204,7 +196,6 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'popup
       $('#container').append(Map.getContainer());
       $('#container').append(UserStats.getContainer());
       $('#container').append(GameInformation.getContainer());
-      $('#container').append(Popup.getContainer());
 
       initializeInput();
 

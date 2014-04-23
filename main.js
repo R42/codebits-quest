@@ -11,7 +11,7 @@ requirejs.config({
     'clock'          : 'js/clock',
     'gameInformation': 'js/gameInformation',
     'layout'         : 'js/layout',
-    'popup'          : 'js/popup'
+    'genericPopup'   : 'js/popups/genericPopup'
   },
 
   shim: {
