@@ -7,7 +7,7 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
 
   var tickCount = 0;
 
-  var SECONDS_PER_TICK = 10; // seconds
+  var SECONDS_PER_FRAME = 1; // seconds
 
   var GAME_MODE_PLAYING = 0;
 
@@ -17,11 +17,98 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
 
   var currentPopup;
 
+  var bufferedInput;
+
   // Manages user input
-  // up, down, left, right, action, cancel
   function initializeInput(){
     $(document).keydown(function(event){
-      switch(event.which){
+      bufferedInput = event.which;
+    });
+  }
+
+  function moveUserLeft(){
+    if(gameMode == GAME_MODE_POPUP){
+      currentPopup.keyPressed('left');
+    } else if(gameMode == GAME_MODE_PLAYING){
+      User.left();
+    }
+  }
+
+  function moveUserUp(){
+    if(gameMode == GAME_MODE_POPUP){
+      currentPopup.keyPressed('up');
+    } else if(gameMode == GAME_MODE_PLAYING){
+      User.up();
+    }
+  }
+
+  function moveUserRight(){
+    if(gameMode == GAME_MODE_POPUP){
+      currentPopup.keyPressed('right');
+    } else if(gameMode == GAME_MODE_PLAYING){
+      User.right();
+    }
+  }
+
+  function moveUserDown(){
+    if(gameMode == GAME_MODE_POPUP){
+      currentPopup.keyPressed('down');
+    } else if(gameMode == GAME_MODE_PLAYING){
+      User.down();
+    }
+  }
+
+  function userAction(){
+    var userLocation = Map.getUserLocation();
+
+    if(gameMode == GAME_MODE_POPUP){
+      currentPopup.keyPressed('action');
+    }
+    else if(typeof userLocation === 'object' &&
+      userLocation.popup){
+        gameMode = GAME_MODE_POPUP;
+        currentPopup = userLocation.popup;
+        userLocation.popup.doAction(function(){
+          gameMode = GAME_MODE_PLAYING;
+        });
+      }
+    else if(typeof userLocation === 'object'){
+
+      if(typeof userLocation.getType === 'function' &&
+        userLocation.getType() === 'event'){
+          Clock.setTime(userLocation.getActiveEvent().endDate);
+      }
+      else if(typeof userLocation.doAction === 'function'){
+        userLocation.doAction();
+      }
+    }
+  }
+
+  function updateUserStats(){
+    UserStats.increaseStat('hunger', 0.01);
+    UserStats.increaseStat('thirst', 0.01);
+    UserStats.decreaseStat('stamina', 0.01);
+  }
+
+  function updateWorldClock(){
+    if(gameMode === GAME_MODE_PLAYING){
+      Clock.addTime(SECONDS_PER_FRAME);
+    }
+  }
+
+  function drawWorld(){
+    Map.draw();
+    UserStats.draw();
+    if(gameMode === GAME_MODE_PLAYING){
+      GameInformation.draw();
+    }
+  }
+
+  function frame(){
+
+    // process inputs
+    if(bufferedInput){
+      switch(bufferedInput){
         case 37:
           moveUserLeft();
           break;
@@ -37,115 +124,20 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
         case 13:
           userAction();
         default:
-          console.log(event.which);
+          console.log(bufferedInput);
           break;
-        }
-      });
-  }
-
-  function moveUserLeft(){
-    if(gameMode == GAME_MODE_POPUP){
-      currentPopup.keyPressed('left');
-    } else if(gameMode == GAME_MODE_PLAYING){
-      if(User.left()){
-        tick(true);
       }
+      bufferedInput = undefined;
     }
-  }
 
-  function moveUserUp(){
-    if(gameMode == GAME_MODE_POPUP){
-      currentPopup.keyPressed('up');
-    } else if(gameMode == GAME_MODE_PLAYING){
-      if(User.up()){
-        tick(true);
-      }
-    }
-  }
-
-  function moveUserRight(){
-    if(gameMode == GAME_MODE_POPUP){
-      currentPopup.keyPressed('right');
-    } else if(gameMode == GAME_MODE_PLAYING){
-      if(User.right()){
-        tick(true);
-      }
-    }
-  }
-
-  function moveUserDown(){
-    if(gameMode == GAME_MODE_POPUP){
-      currentPopup.keyPressed('down');
-    } else if(gameMode == GAME_MODE_PLAYING){
-      if(User.down()){
-        tick(true);
-      }
-    }
-  }
-
-  function userAction(){
-    var updateClock = true;
-    var userLocation = Map.getUserLocation();
-
-    if(gameMode == GAME_MODE_POPUP){
-      currentPopup.keyPressed('action');
-    }
-    else if(typeof userLocation === 'object' &&
-      userLocation.popup){
-        gameMode = GAME_MODE_POPUP;
-        currentPopup = userLocation.popup;
-        userLocation.popup.doAction(function(){
-          gameMode = GAME_MODE_PLAYING;
-          tick(false, false);
-        });
-        tick(false, true);
-      }
-    else if(typeof userLocation === 'object'){
-
-      if(typeof userLocation.getType === 'function' &&
-        userLocation.getType() === 'event'){
-          Clock.setTime(userLocation.getActiveEvent().endDate);
-          tick(false, true);
-      }
-      else if(typeof userLocation.doAction === 'function'){
-        userLocation.doAction();
-        tick(false, true);
-      }
-    }
-  }
-
-  function updateUserStats(){
-    UserStats.increaseStat('hunger', 1);
-    UserStats.increaseStat('thirst', 1);
-    UserStats.decreaseStat('stamina', 1);
-  }
-
-  function updateWorldClock(){
-    if(gameMode === GAME_MODE_PLAYING){
-      Clock.addTime(SECONDS_PER_TICK);
-    }
-  }
-
-  function updateWorld(updateStats){
-    if(updateStats){
+    if(gameMode == GAME_MODE_PLAYING){
+      updateWorldClock();
       updateUserStats();
     }
 
-    Map.draw();
-    UserStats.draw();
-    if(gameMode === GAME_MODE_PLAYING){
-      GameInformation.draw();
-    }
-  }
+    drawWorld();
 
-  function tick(updateStats, updateClock){
-
-    tickCount += 1;
-
-    if(updateClock){
-      updateWorldClock();
-    }
-    updateWorld(updateStats);
+    requestAnimationFrame(frame);
   }
 
   var Engine = {
@@ -178,11 +170,11 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
       $('#container').append(GameInformation.getContainer());
 
       initializeInput();
-
-      tick();
     },
 
-    draw: tick
+    start: function(){
+      requestAnimationFrame(frame);
+    }
   };
 
   return Engine;
