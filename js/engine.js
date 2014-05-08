@@ -17,6 +17,8 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
 
   var currentPopup;
 
+  // Manages user input
+  // up, down, left, right, action, cancel
   function initializeInput(){
     $(document).keydown(function(event){
       switch(event.which){
@@ -41,34 +43,11 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
       });
   }
 
-  function moveUser(x, y){
-    //
-    var newX = User.x + x;
-    var newY = User.y + y;
-
-    var location = Map.getLocation(newX, newY);
-
-    if(location == '#' || location == 'o'){
-      return false;
-    }
-
-    // checks map bounds
-    /*if(User.x == 0 || User.x == mapBounds.width - 1
-      || User.y == 0 || User.y == mapBounds.height - 1){
-        return false;
-    }*/
-
-    User.x = newX;
-    User.y = newY;
-
-    return true;
-  }
-
   function moveUserLeft(){
     if(gameMode == GAME_MODE_POPUP){
       currentPopup.keyPressed('left');
     } else if(gameMode == GAME_MODE_PLAYING){
-      if(moveUser(-1, 0)){
+      if(User.left()){
         tick(true);
       }
     }
@@ -78,7 +57,7 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
     if(gameMode == GAME_MODE_POPUP){
       currentPopup.keyPressed('up');
     } else if(gameMode == GAME_MODE_PLAYING){
-      if(moveUser(0, -1)){
+      if(User.up()){
         tick(true);
       }
     }
@@ -88,7 +67,7 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
     if(gameMode == GAME_MODE_POPUP){
       currentPopup.keyPressed('right');
     } else if(gameMode == GAME_MODE_PLAYING){
-      if(moveUser(1, 0)){
+      if(User.right()){
         tick(true);
       }
     }
@@ -98,7 +77,7 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
     if(gameMode == GAME_MODE_POPUP){
       currentPopup.keyPressed('down');
     } else if(gameMode == GAME_MODE_PLAYING){
-      if(moveUser(0, 1)){
+      if(User.down()){
         tick(true);
       }
     }
@@ -175,8 +154,7 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
 
       gameMode = GAME_MODE_PLAYING;
 
-      User.x = 1;
-      User.y = 1;
+      User.initialize({x: 1, y: 1});
 
       UserStats.initialize({
         money: 1000,
