@@ -17,12 +17,12 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
 
   var currentPopup;
 
-  var bufferedInput;
+  var bufferedInput = [];
 
   // Manages user input
   function initializeInput(){
     $(document).keydown(function(event){
-      bufferedInput = event.which;
+      bufferedInput.push(event.which);
     });
   }
 
@@ -105,10 +105,11 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
   }
 
   function frame(){
-
+    var input;
     // process inputs
-    if(bufferedInput){
-      switch(bufferedInput){
+    while(input = bufferedInput.pop())
+    if(input){
+      switch(input){
         case 37:
           moveUserLeft();
           break;
@@ -127,7 +128,6 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
           console.log(bufferedInput);
           break;
       }
-      bufferedInput = undefined;
     }
 
     if(gameMode == GAME_MODE_PLAYING){
