@@ -25,4 +25,5 @@ var e;
 require(['engine'], function(Engine) {
   e = Engine;
   Engine.initialize();
+  Engine.start();
 });

@@ -18,7 +18,7 @@ define(['jquery'], function($) {
   }
 
   function drawStat(propName, value) {
-    var line = '| ' + propName + ': ' + value;
+    var line = '| ' + propName + ': ' + Math.floor(value);
     for(var i = line.length; i <= WIDTH - 4; ++i) {
       line += '&nbsp';
     }
