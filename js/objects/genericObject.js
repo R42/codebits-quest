@@ -1,10 +1,10 @@
-define(['userStats'], function(UserStats) {
-  var GenericObject = function(a, p, s, d, p) {
-    this.actions = a;
-    this.price = p;
-    this.terrainSymbol = s;
-    this.description = d;
-    this.popup = p;
+define(['userStats', 'configs'], function(UserStats, Configs) {
+  var GenericObject = function(options) {
+    this.actions = options.actions;
+    this.price = options.price || 0;
+    this.color = options.color;
+    this.description = options.description || '';
+    this.popup = options.popup || null;
   };
 
   GenericObject.prototype = {
@@ -12,8 +12,14 @@ define(['userStats'], function(UserStats) {
       return 'object';
     },
 
-    draw: function() {
-      return this.terrainSymbol;
+    draw: function(context, position) {
+      context.fillStyle = this.color;
+      context.fillRect(
+        position.X * Configs.BLOCK_SIZE,
+        position.Y * Configs.BLOCK_SIZE,
+        Configs.BLOCK_SIZE,
+        Configs.BLOCK_SIZE
+      );
     },
 
     getDescription: function() {
