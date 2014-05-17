@@ -1,10 +1,12 @@
 define(['userStats'], function(UserStats) {
-  var GenericObject = function(a, p, s, d, p) {
-    this.actions = a;
-    this.price = p;
-    this.terrainSymbol = s;
-    this.description = d;
-    this.popup = p;
+  var GenericObject = function(actions, price, terrainSymbol, description,
+    popup) {
+
+    this.actions = actions;
+    this.price = price;
+    this.terrainSymbol = terrainSymbol;
+    this.description = description;
+    this.popup = popup;
   };
 
   GenericObject.prototype = {
