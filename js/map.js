@@ -4,34 +4,44 @@ define(
     'clock',
     'genericObject',
     'stage',
-    'genericPopup'
+    'genericPopup',
+    'configs'
   ],
-  function($, Clock, GenericObject, Stage, Popup){
+  function($, Clock, GenericObject, Stage, Popup, Configs){
 
-    var element = $('<div>');
+    var element = $('<canvas>').prop('width', 800). prop('height', 300)[0];
 
     var actor;
 
     // Create a water vending machine
     var goWater = new GenericObject({
-        thirst: -20,
-        blader: 10
-      },
-      10,
-      'V',
-      'A water vending machine. Money: -10. Thirst: -20. Blader +10',
-      new Popup('A popup', [])
-    );
+      actions : {
+          thirst: -20,
+          blader: 10
+        },
+      price:10,
+      color:'rgb(0,206,209)',
+      description: 'A water vending machine. Money: -10. Thirst: -20. Blader +10',
+      popup: new Popup('A popup', [])
+    });
 
     // Create a WC
     var goWC = new GenericObject({
-      blader: 0
-    }, 0, 'W', 'A place to take a leak. Blader: 0');
+      actions: {
+        blader: 0
+      },
+      price: 0,
+      color: 'rgb(255, 215, 0)',
+      description: 'A place to take a leak. Blader: 0'
+    });
 
     // Create the food corner
     var goFood = new GenericObject({
-      hunger: 0
-    }, 0, 'F', 'The food corner. All your burguers and pizzas are belong to here.');
+      actions: { hunger: 0 },
+      price: 0,
+      color: 'rgb(139, 69, 19)',
+      description: 'The food corner. All your burguers and pizzas are belong to here.'
+    });
 
     // Create a stage
     var baseDate = Clock.getBaseDate();
@@ -143,42 +153,48 @@ define(
       ]
     );
 
-    function drawContainer(drawnMap){
-
-      $(element).empty();
-
-      for (var i = 0; i < drawnMap.length; i++) {
-        var line = drawnMap[i];
-        var stringLine = '';
-
-        for (var j = 0; j < line.length; j++) {
-          stringLine += drawnMap[i][j];
-        }
-
-        $(element).append(stringLine);
-        $(element).append('<br/>');
-      }
+    function drawBox(context, position, color){
+      context.fillStyle = color;
+      context.fillRect(
+        position.X * Configs.BLOCK_SIZE,
+        position.Y * Configs.BLOCK_SIZE,
+        Configs.BLOCK_SIZE,
+        Configs.BLOCK_SIZE
+      );
     }
 
-    function drawActor(drawnMap){
-      drawnMap[actor.getY()][actor.getX()] = '@';
+    function drawActor(context){
+      drawBox(context, {X:actor.getX(), Y:actor.getY()}, 'rgb(0,0,255)');
+      //drawnMap[actor.getY()][actor.getX()] = '@';
     }
 
-    function drawTerrain(terrain){
+    function drawTerrain(terrain, context, position){
+
       if(typeof terrain === 'object'){
-        return $('<span>').append(terrain.draw()).html();
+        terrain.draw(context, position);
+        return;
       }
+
+      var color;
       switch(terrain){
         case '.':
+          color = Configs.FLOOR_COLOR;
+          break;
         case '#':
+          color = Configs.WALL_COLOR;
+          break;
         case 'o':
+          color = 'rgb(255,0,0)';
+          break;
         case 'c':
-          return terrain;
-        case 'W':	//WC
-        case 'T':	//Recinto
+          color = 'rgb(0,255,0)';
+        /*case 'W': //WC
+        case 'T': //Recinto
         case 'V': //Vending Machine
-          return $('<span>').append(terrain).html();
+          return $('<span>').append(terrain).html();*/
       }
+
+      drawBox(context, position, color);
     }
 
     var Map = {
@@ -190,7 +206,7 @@ define(
 
         draw: function(){
 
-          var drawnMap = [];
+          var context = element.getContext('2d');
 
           // draw terrain
 
@@ -198,21 +214,15 @@ define(
 
             var line = map[i];
 
-            drawnMap[i] = [];
-
             for (var j = 0; j < line.length; j++) {
 
-                drawnMap[i][j] = drawTerrain(line[j]);
+              drawTerrain(line[j], context, {X:j, Y:i});
             }
           }
 
           // draw actors
 
-          drawActor(drawnMap);
-
-          // draw container
-
-          drawContainer(drawnMap);
+          drawActor(context);
 
         },
 
@@ -267,7 +277,7 @@ define(
       ['#','#','#','#','#',goWC,'.','#','#','#','#','#','#','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','#'],
       ['#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#']
     ];
-    
+
     return Map;
 
 });

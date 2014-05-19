@@ -1,4 +1,4 @@
-define(['userStats', 'clock'], function(UserStats, Clock) {
+define(['userStats', 'clock', 'configs'], function(UserStats, Clock, Configs) {
   var Stage = function(schedule) {
     this.schedule = schedule;
   };
@@ -8,8 +8,14 @@ define(['userStats', 'clock'], function(UserStats, Clock) {
       return 'event';
     },
 
-    draw: function() {
-      return 'S';
+    draw: function(context, position) {
+      context.fillStyle = 'rgb(75, 0, 130)';
+      context.fillRect(
+        position.X * Configs.BLOCK_SIZE,
+        position.Y * Configs.BLOCK_SIZE,
+        Configs.BLOCK_SIZE,
+        Configs.BLOCK_SIZE
+      );
     },
 
     getDescription: function() {

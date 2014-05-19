@@ -1,4 +1,4 @@
-define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], function($, Map, UserStats, GameInformation, User, Clock){
+define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'configs'], function($, Map, UserStats, GameInformation, User, Clock, Configs){
   var mapElem;
 
   var statsElem;
@@ -107,26 +107,27 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock'], funct
   function frame(){
     var input;
     // process inputs
-    while(input = bufferedInput.pop())
-    if(input){
-      switch(input){
-        case 37:
-          moveUserLeft();
-          break;
-        case 38:
-          moveUserUp();
-          break;
-        case 39:
-          moveUserRight();
-          break;
-        case 40:
-          moveUserDown();
-          break;
-        case 13:
-          userAction();
-        default:
-          console.log(bufferedInput);
-          break;
+    while(input = bufferedInput.pop()){
+      if(input){
+        switch(input){
+          case 37:
+            moveUserLeft();
+            break;
+          case 38:
+            moveUserUp();
+            break;
+          case 39:
+            moveUserRight();
+            break;
+          case 40:
+            moveUserDown();
+            break;
+          case 13:
+            userAction();
+          default:
+            console.log(bufferedInput);
+            break;
+        }
       }
     }
 
