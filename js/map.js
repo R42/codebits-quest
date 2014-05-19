@@ -188,10 +188,6 @@ define(
           break;
         case 'c':
           color = 'rgb(0,255,0)';
-        /*case 'W': //WC
-        case 'T': //Recinto
-        case 'V': //Vending Machine
-          return $('<span>').append(terrain).html();*/
       }
 
       drawBox(context, position, color);
