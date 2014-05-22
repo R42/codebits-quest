@@ -12,7 +12,9 @@ requirejs.config({
     'gameInformation': 'js/gameInformation',
     'layout'         : 'js/layout',
     'genericPopup'   : 'js/popups/genericPopup',
-    'configs'        : 'js/configs'
+    'configs'        : 'js/configs',
+
+    'ground_floor_level' : 'js/levels/ground_floor'
   },
 
   shim: {
