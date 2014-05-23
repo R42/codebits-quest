@@ -6,15 +6,17 @@ define(
     'stage',
     'genericPopup',
     'configs',
-    'ground_floor_level'
+    'levels'
   ],
-  function($, Clock, GenericObject, Stage, Popup, Configs, GroundFloorLevel){
+  function($, Clock, GenericObject, Stage, Popup, Configs, Levels){
 
     var element = $('<canvas>').prop('width', 800). prop('height', 300)[0];
 
     var actor;
 
-    var map;
+    var levels;
+
+    var currentLevel;
 
     function drawBox(context, position, color){
       context.fillStyle = color;
@@ -56,13 +58,29 @@ define(
       drawBox(context, position, color);
     }
 
+    function loadLevels(){
+
+      levels = {
+        names: new Array(Levels.length),
+        index: new Array(Levels.length)
+      }
+
+      for(i = 0; i < Levels.length; ++i){
+        var level = loadLevel(Levels[i]);
+
+        levels.names[level.identifier] = level;
+        levels.index[i] = level;
+      }
+
+      currentLevel = levels.index[0];
+    }
+
     function loadLevel(level){
 
-      map = new Array(level.height);
-
+      ret = new Array(level.height);
       for(line = 0; line < level.map.length; ++line){
 
-        map[line] = level.map[line].split("");
+        ret[line] = level.map[line].split("");
       }
 
       var mapObject;
@@ -70,40 +88,31 @@ define(
       for(mapObjIdx = 0; mapObjIdx < level.objects.length; ++mapObjIdx){
 
         mapObject = level.objects[mapObjIdx];
-        map[mapObject.y][mapObject.x] = mapObject.name;
+        ret[mapObject.y][mapObject.x] = mapObject.name;
       }
+
+      return ret;
     }
 
     var Map = {
 
         initialize: function(user){
-
-          loadLevel(GroundFloorLevel);
-
+          loadLevels();
           actor = user;
-
         },
 
         draw: function(){
-
           var context = element.getContext('2d');
-
           // draw terrain
-
-          for (var i = 0; i < map.length; i++) {
-
-            var line = map[i];
-
+          for (var i = 0; i < currentLevel.length; i++) {
+            var line = currentLevel[i];
             for (var j = 0; j < line.length; j++) {
-
               drawTerrain(line[j], context, {X:j, Y:i});
             }
           }
 
           // draw actors
-
           drawActor(context);
-
         },
 
         getContainer: function(){
@@ -111,21 +120,21 @@ define(
           return element;
         },
 
-        getBounds: function() {
-          return {
-            width: map[0].length,
-            height: map.length
-          };
-        },
-
         getUserLocation: function(){
 
-          return map[actor.getY()][actor.getX()];
+          return currentLevel[actor.getY()][actor.getX()];
         },
 
         getLocation: function(x, y){
 
-          return map[y][x];
+          return currentLevel[y][x];
+        },
+
+        travelTo: function(levelIdentifier, portalLink){
+
+          var level = levels[levelIdentifier];
+
+          currentLevel = level;
         }
     };
 

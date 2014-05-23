@@ -3,8 +3,6 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'confi
 
   var statsElem;
 
-  var mapBounds;
-
   var tickCount = 0;
 
   var SECONDS_PER_FRAME = 1; // seconds
@@ -163,8 +161,6 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'confi
       Map.initialize(User);
 
       GameInformation.initialize();
-
-      mapBounds = Map.getBounds();
 
       $('#container').append(Map.getContainer());
       $('#container').append(UserStats.getContainer());

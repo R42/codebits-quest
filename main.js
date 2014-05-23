@@ -14,7 +14,7 @@ requirejs.config({
     'genericPopup'   : 'js/popups/genericPopup',
     'configs'        : 'js/configs',
 
-    'ground_floor_level' : 'js/levels/ground_floor'
+    'levels' : 'js/levels/levels'
   },
 
   shim: {
