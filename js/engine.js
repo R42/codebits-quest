@@ -1,15 +1,17 @@
-define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'configs'], function($, Map, UserStats, GameInformation, User, Clock, Configs){
+define([
+    'jquery',
+    'map',
+    'userStats',
+    'gameInformation',
+    'user',
+    'clock',
+    'configs'
+  ], function($, Map, UserStats, GameInformation, User, Clock, Configs){
   var mapElem;
 
   var statsElem;
 
   var tickCount = 0;
-
-  var SECONDS_PER_FRAME = 1; // seconds
-
-  var GAME_MODE_PLAYING = 0;
-
-  var GAME_MODE_POPUP = 1;
 
   var gameMode;
 
@@ -22,63 +24,29 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'confi
   // Manages user input
   function initializeInput(){
     $(document).keydown(function(event){
-      bufferedInput.push(event.which);
+      bufferedInput = event.which;
     });
-  }
-
-  function moveUserLeft(){
-    if(gameMode == GAME_MODE_POPUP){
-      currentPopup.keyPressed('left');
-    } else if(gameMode == GAME_MODE_PLAYING){
-      User.left();
-    }
-  }
-
-  function moveUserUp(){
-    if(gameMode == GAME_MODE_POPUP){
-      currentPopup.keyPressed('up');
-    } else if(gameMode == GAME_MODE_PLAYING){
-      User.up();
-    }
-  }
-
-  function moveUserRight(){
-    if(gameMode == GAME_MODE_POPUP){
-      currentPopup.keyPressed('right');
-    } else if(gameMode == GAME_MODE_PLAYING){
-      User.right();
-    }
-  }
-
-  function moveUserDown(){
-    if(gameMode == GAME_MODE_POPUP){
-      currentPopup.keyPressed('down');
-    } else if(gameMode == GAME_MODE_PLAYING){
-      User.down();
-    }
   }
 
   function userAction(){
     var userLocation = Map.getUserLocation();
 
-    if(gameMode == GAME_MODE_POPUP){
-      currentPopup.keyPressed('action');
-    }
-    else if(typeof userLocation === 'object' &&
-      userLocation.popup){
-        gameMode = GAME_MODE_POPUP;
+    if(typeof userLocation === 'object'){
+
+      if(userLocation.popup){
+
+        gameMode = Configs.GAME_MODE_POPUP;
         currentPopup = userLocation.popup;
         userLocation.popup.doAction(function(){
-          gameMode = GAME_MODE_PLAYING;
+          gameMode = Configs.GAME_MODE_PLAYING;
         });
-      }
-    else if(typeof userLocation === 'object'){
-
-      if(typeof userLocation.getType === 'function' &&
+      } else if(typeof userLocation.getType === 'function' &&
         userLocation.getType() === 'event'){
+
           Clock.setTime(userLocation.getActiveEvent().endDate);
-      }
-      else if(typeof userLocation.doAction === 'function'){
+
+      } else if(typeof userLocation.doAction === 'function'){
+
         userLocation.doAction();
       }
     }
@@ -104,37 +72,37 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'confi
   }
 
   function updateWorldClock(){
-    if(gameMode === GAME_MODE_PLAYING){
-      Clock.addTime(SECONDS_PER_FRAME);
+    if(gameMode === Configs.GAME_MODE_PLAYING){
+      Clock.addTime(Configs.SECONDS_PER_FRAME);
     }
   }
 
   function drawWorld(){
     Map.draw();
     UserStats.draw();
-    if(gameMode === GAME_MODE_PLAYING){
+    if(gameMode === Configs.GAME_MODE_PLAYING){
       GameInformation.draw();
     }
   }
 
   function frame(){
-
     var input;
-    // process inputs
-    while(input = bufferedInput.pop()){
-      if(input){
-        switch(input){
+
+    if(gameMode == Configs.GAME_MODE_PLAYING){
+      // process inputs
+      if(bufferedInput){
+        switch(bufferedInput){
           case 37:
-            moveUserLeft();
+            User.left();
             break;
           case 38:
-            moveUserUp();
+            User.up();
             break;
           case 39:
-            moveUserRight();
+            User.right();
             break;
           case 40:
-            moveUserDown();
+            User.down();
             break;
           case 13:
             userAction();
@@ -142,13 +110,39 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'confi
             console.log(bufferedInput);
             break;
         }
-      }
-    }
 
-    if(gameMode == GAME_MODE_PLAYING){
+        bufferedInput = null;
+      }
+
       analyseWorld();
       updateWorldClock();
       updateUserStats();
+
+    } else if(gameMode == Configs.GAME_MODE_POPUP){
+
+      if(bufferedInput){
+        switch(bufferedInput){
+          case 37:
+            currentPopup.keyPressed('left');
+            break;
+          case 38:
+            currentPopup.keyPressed('up');
+            break;
+          case 39:
+            currentPopup.keyPressed('right');
+            break;
+          case 40:
+            currentPopup.keyPressed('down');
+            break;
+          case 13:
+            currentPopup.keyPressed('action');
+          default:
+            console.log(bufferedInput);
+            break;
+        }
+
+        bufferedInput = null;
+      }
     }
 
     drawWorld();
@@ -160,7 +154,7 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'confi
 
     initialize: function(){
 
-      gameMode = GAME_MODE_PLAYING;
+      gameMode = Configs.GAME_MODE_PLAYING;
 
       User.initialize({x: 1, y: 1});
 
