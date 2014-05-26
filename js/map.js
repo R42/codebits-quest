@@ -77,10 +77,14 @@ define(
 
     function loadLevel(level){
 
-      ret = new Array(level.height);
+      ret = {
+        map: new Array(level.height),
+        portals: new Array(level.portals.length)
+      }
+
       for(line = 0; line < level.map.length; ++line){
 
-        ret[line] = level.map[line].split("");
+        ret.map[line] = level.map[line].split("");
       }
 
       var mapObject;
@@ -88,7 +92,16 @@ define(
       for(mapObjIdx = 0; mapObjIdx < level.objects.length; ++mapObjIdx){
 
         mapObject = level.objects[mapObjIdx];
-        ret[mapObject.y][mapObject.x] = mapObject.name;
+        ret.map[mapObject.y][mapObject.x] = mapObject.name;
+      }
+
+      // all about portals
+      var portalObj;
+
+      for(portalObjIdx = 0; portalObjIdx < level.portals.length; ++portalObjIdx){
+        portalObj = level.portals[portalObjIdx];
+        ret.map[portalObj.y][portalObj.x] =
+        ret.portals = portalObj.portal;
       }
 
       return ret;
@@ -104,8 +117,8 @@ define(
         draw: function(){
           var context = element.getContext('2d');
           // draw terrain
-          for (var i = 0; i < currentLevel.length; i++) {
-            var line = currentLevel[i];
+          for (var i = 0; i < currentLevel.map.length; i++) {
+            var line = currentLevel.map[i];
             for (var j = 0; j < line.length; j++) {
               drawTerrain(line[j], context, {X:j, Y:i});
             }
@@ -122,19 +135,17 @@ define(
 
         getUserLocation: function(){
 
-          return currentLevel[actor.getY()][actor.getX()];
+          return currentLevel.map[actor.getY()][actor.getX()];
         },
 
         getLocation: function(x, y){
 
-          return currentLevel[y][x];
+          return currentLevel.map[y][x];
         },
 
         travelTo: function(levelIdentifier, portalLink){
 
-          var level = levels[levelIdentifier];
-
-          currentLevel = level;
+          console.log('travelling');
         }
     };
 

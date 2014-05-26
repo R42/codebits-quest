@@ -17,6 +17,8 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'confi
 
   var bufferedInput = [];
 
+  var userTraveled = false;
+
   // Manages user input
   function initializeInput(){
     $(document).keydown(function(event){
@@ -82,6 +84,19 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'confi
     }
   }
 
+  function analyseWorld(){
+    var userLocation = Map.getUserLocation();
+
+    if(userTraveled){
+      if(typeof userLocation         === 'object' &&
+         typeof userLocation.getType === 'function' &&
+         userLocation.getType()      === 'portal'){
+           // navigate
+           Map.travelTo(userLocation.linkId, userLocation.destination);
+      }
+    }
+  }
+
   function updateUserStats(){
     UserStats.increaseStat('hunger', 0.01);
     UserStats.increaseStat('thirst', 0.01);
@@ -103,6 +118,7 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'confi
   }
 
   function frame(){
+
     var input;
     // process inputs
     while(input = bufferedInput.pop()){
@@ -130,6 +146,7 @@ define(['jquery', 'map', 'userStats', 'gameInformation', 'user', 'clock', 'confi
     }
 
     if(gameMode == GAME_MODE_PLAYING){
+      analyseWorld();
       updateWorldClock();
       updateUserStats();
     }

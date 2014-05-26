@@ -4,9 +4,10 @@ define(
     'clock',
     'genericObject',
     'stage',
-    'genericPopup'
+    'genericPopup',
+    'portal'
   ],
-  function($, Clock, GenericObject, Stage, Popup){
+  function($, Clock, GenericObject, Stage, Popup, Portal){
 
     // Create a water vending machine
     var goWater = new GenericObject({
@@ -188,6 +189,10 @@ define(
         { name: goWater,  x:1,   y:10},
         { name: goFood,   x:1,   y:11},
         { name: goWC,     x:5,   y:24}
+      ],
+
+      portals: [
+        { portal: new Portal('GRD01', '1stlevel'), x: 1, y: 4 }
       ],
 
       width: 50,

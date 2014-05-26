@@ -1,4 +1,4 @@
-define([], function(){
+define(['portal'], function(Portal){
     var Map = {
       identifier: '1stlevel',
       map: [
@@ -30,6 +30,9 @@ define([], function(){
       '#############'  //25
       ],
       objects: [],
+      portals: [
+        { portal: new Portal('GRD01', 'grdfloor'), x: 1, y: 4 }
+      ],
       width: 13,
       height: 25
     };

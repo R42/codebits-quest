@@ -14,7 +14,8 @@ requirejs.config({
     'genericPopup'   : 'js/popups/genericPopup',
     'configs'        : 'js/configs',
 
-    'levels' : 'js/levels/levels'
+    'levels' : 'js/levels/levels',
+    'portal' : 'js/objects/portal'
   },
 
   shim: {
