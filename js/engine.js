@@ -17,14 +17,28 @@ define([
 
   var currentPopup;
 
-  var bufferedInput = [];
-
-  var userTraveled = false;
+  var bufferedInput;
 
   // Manages user input
   function initializeInput(){
     $(document).keydown(function(event){
-      bufferedInput = event.which;
+      switch(event.which){
+        case 37:
+          bufferedInput = 'left';
+          break;
+        case 38:
+          bufferedInput = 'up';
+          break;
+        case 39:
+          bufferedInput = 'right';
+          break;
+        case 40:
+          bufferedInput = 'down';
+          break;
+        case 13:
+          bufferedInput = 'action';
+          break;
+      }
     });
   }
 
@@ -32,21 +46,18 @@ define([
     var userLocation = Map.getUserLocation();
 
     if(typeof userLocation === 'object'){
-
       if(userLocation.popup){
-
         gameMode = Configs.GAME_MODE_POPUP;
         currentPopup = userLocation.popup;
         userLocation.popup.doAction(function(){
           gameMode = Configs.GAME_MODE_PLAYING;
         });
-      } else if(typeof userLocation.getType === 'function' &&
+      }
+      else if(typeof userLocation.getType === 'function' &&
         userLocation.getType() === 'event'){
-
           Clock.setTime(userLocation.getActiveEvent().endDate);
-
-      } else if(typeof userLocation.doAction === 'function'){
-
+      }
+      else if(typeof userLocation.doAction === 'function'){
         userLocation.doAction();
       }
     }
@@ -55,12 +66,12 @@ define([
   function analyseWorld(){
     var userLocation = Map.getUserLocation();
 
-    if(userTraveled){
+    if(User.moved()){
       if(typeof userLocation         === 'object' &&
          typeof userLocation.getType === 'function' &&
          userLocation.getType()      === 'portal'){
            // navigate
-           Map.travelTo(userLocation.linkId, userLocation.destination);
+           Map.travelTo(userLocation.destination, userLocation.linkId);
       }
     }
   }
@@ -86,31 +97,16 @@ define([
   }
 
   function frame(){
-    var input;
+    var key;
 
     if(gameMode == Configs.GAME_MODE_PLAYING){
       // process inputs
       if(bufferedInput){
-        switch(bufferedInput){
-          case 37:
-            User.left();
-            break;
-          case 38:
-            User.up();
-            break;
-          case 39:
-            User.right();
-            break;
-          case 40:
-            User.down();
-            break;
-          case 13:
-            userAction();
-          default:
-            console.log(bufferedInput);
-            break;
+        if(bufferedInput === 'action'){
+          userAction();
+        } else {
+          User.keyPressed(bufferedInput);
         }
-
         bufferedInput = null;
       }
 
@@ -119,33 +115,16 @@ define([
       updateUserStats();
 
     } else if(gameMode == Configs.GAME_MODE_POPUP){
-
       if(bufferedInput){
-        switch(bufferedInput){
-          case 37:
-            currentPopup.keyPressed('left');
-            break;
-          case 38:
-            currentPopup.keyPressed('up');
-            break;
-          case 39:
-            currentPopup.keyPressed('right');
-            break;
-          case 40:
-            currentPopup.keyPressed('down');
-            break;
-          case 13:
-            currentPopup.keyPressed('action');
-          default:
-            console.log(bufferedInput);
-            break;
-        }
-
+        currentPopup.keyPressed(bufferedInput);
         bufferedInput = null;
       }
     }
 
     drawWorld();
+
+    //resets
+    User.setMoved(false);
 
     requestAnimationFrame(frame);
   }

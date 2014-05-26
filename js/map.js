@@ -68,7 +68,7 @@ define(
       for(i = 0; i < Levels.length; ++i){
         var level = loadLevel(Levels[i]);
 
-        levels.names[level.identifier] = level;
+        levels.names[Levels[i].identifier] = level;
         levels.index[i] = level;
       }
 
@@ -100,8 +100,8 @@ define(
 
       for(portalObjIdx = 0; portalObjIdx < level.portals.length; ++portalObjIdx){
         portalObj = level.portals[portalObjIdx];
-        ret.map[portalObj.y][portalObj.x] =
-        ret.portals = portalObj.portal;
+        ret.map[portalObj.y][portalObj.x] = portalObj.portal;
+        ret.portals[portalObjIdx] = portalObj;
       }
 
       return ret;
@@ -145,6 +145,19 @@ define(
 
         travelTo: function(levelIdentifier, portalLink){
 
+          nextLevel = levels.names[levelIdentifier];
+          if(nextLevel){
+            for(portalIdx = 0; portalIdx < nextLevel.portals.length; ++portalIdx){
+              var portal = nextLevel.portals[portalIdx];
+              if(portal.portal.linkId == portalLink){
+                //
+                currentLevel = nextLevel;
+                actor.initialize({
+                  x: portal.x, y: portal.y
+                });
+              }
+            }
+          }
           console.log('travelling');
         }
     };
