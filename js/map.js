@@ -18,6 +18,24 @@ define(
 
     var currentLevel;
 
+    // frame around the actor
+
+    var viewPort = { x: 0, y: 0 };
+
+    function isVisible(position){
+      if(position.X >= viewPort.x &&
+        position.X <= viewPort.x + Configs.VIEWPORT_SIZE &&
+        position.Y >= viewPort.y &&
+        position.Y <= viewPort.y + Configs.VIEWPORT_SIZE){
+
+        return true;
+      }
+    }
+
+    function getViewPortRelativePosition(position){
+      return { X: position.X - viewPort.x, Y: position.Y - viewPort.y };
+    }
+
     function drawBox(context, position, color){
       context.fillStyle = color;
       context.fillRect(
@@ -29,11 +47,22 @@ define(
     }
 
     function drawActor(context){
-      drawBox(context, {X:actor.getX(), Y:actor.getY()}, 'rgb(0,0,255)');
-      //drawnMap[actor.getY()][actor.getX()] = '@';
+      var position = {X:actor.getX(), Y:actor.getY()};
+
+      if(!isVisible(position))
+        return;
+
+      position = getViewPortRelativePosition(position);
+
+      drawBox(context, position, 'rgb(0,0,255)');
     }
 
     function drawTerrain(terrain, context, position){
+
+      if(!isVisible(position))
+        return;
+
+      position = getViewPortRelativePosition(position);
 
       if(typeof terrain === 'object'){
         terrain.draw(context, position);
@@ -107,6 +136,21 @@ define(
       return ret;
     }
 
+    function updateViewPort() {
+      // calculate viewport center
+      var center = (Configs.VIEWPORT_SIZE % 2) == 0?
+                    Configs.VIEWPORT_SIZE/2:
+                    Math.floor(Configs.VIEWPORT_SIZE/2) + 1;
+
+      viewPort.x = actor.getX() - center;
+      viewPort.y = actor.getY() - center;
+
+      if(viewPort.x < 0) viewPort.x = 0;
+      if(viewPort.y < 0) viewPort.y = 0;
+
+      // missing right and bottom bound
+    }
+
     var Map = {
 
         initialize: function(user){
@@ -116,6 +160,9 @@ define(
 
         draw: function(){
           var context = element.getContext('2d');
+
+          updateViewPort();
+
           // draw terrain
           for (var i = 0; i < currentLevel.map.length; i++) {
             var line = currentLevel.map[i];

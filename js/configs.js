@@ -2,7 +2,7 @@ define([], function(){
 
   var Configs = {
 
-    BLOCK_SIZE : 10,
+    BLOCK_SIZE : 20,
 
     WALL_COLOR: '#2F4F4F',
 
@@ -13,6 +13,8 @@ define([], function(){
     GAME_MODE_PLAYING: 0,
 
     GAME_MODE_POPUP: 1,
+
+    VIEWPORT_SIZE: 20
   }
 
   return Configs;
