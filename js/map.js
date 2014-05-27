@@ -10,7 +10,7 @@ define(
   ],
   function($, Clock, GenericObject, Stage, Popup, Configs, Levels){
 
-    var element = $('<canvas>').prop('width', 800). prop('height', 300)[0];
+    var element = $('<canvas>').prop('width', 400). prop('height', 400)[0];
 
     var actor;
 
@@ -33,7 +33,10 @@ define(
     }
 
     function getViewPortRelativePosition(position){
-      return { X: position.X - viewPort.x, Y: position.Y - viewPort.y };
+      return {
+        X: position.X - viewPort.x,
+        Y: position.Y - viewPort.y
+      };
     }
 
     function drawBox(context, position, color){
@@ -137,18 +140,46 @@ define(
     }
 
     function updateViewPort() {
+
+      var actorPosition = { X:actor.getX(), Y:actor.getY() }
+
       // calculate viewport center
       var center = (Configs.VIEWPORT_SIZE % 2) == 0?
                     Configs.VIEWPORT_SIZE/2:
                     Math.floor(Configs.VIEWPORT_SIZE/2) + 1;
 
-      viewPort.x = actor.getX() - center;
-      viewPort.y = actor.getY() - center;
+      // if actor is within the safe zone no update needed
+      var actorRelativePosition = getViewPortRelativePosition(actorPosition)
+
+      var actorXOffset = actorRelativePosition.X - center;
+      if(Math.abs(actorXOffset) > Configs.VIEWPORT_SAFE_ZONE){
+        //outside of safe zone for x. correct
+        viewPort.x = actor.getX() - center + (actorXOffset > 0? -Configs.VIEWPORT_SAFE_ZONE: Configs.VIEWPORT_SAFE_ZONE);
+      }
+
+      var actorYOffset = actorRelativePosition.Y - center;
+      if(Math.abs(actorYOffset) > Configs.VIEWPORT_SAFE_ZONE){
+        //outside of safe zone for y. correct
+        viewPort.y = actor.getY() - center + (actorYOffset > 0? -Configs.VIEWPORT_SAFE_ZONE: Configs.VIEWPORT_SAFE_ZONE);
+      }
 
       if(viewPort.x < 0) viewPort.x = 0;
       if(viewPort.y < 0) viewPort.y = 0;
-
-      // missing right and bottom bound
+      
+      // fixes X
+      if(currentLevel.map[actorPosition.Y].length > Configs.VIEWPORT_SIZE){
+        //if(viewPort.x < 0) viewPort.x = 0;
+        if(viewPort.x + Configs.VIEWPORT_SIZE > currentLevel.map[actorPosition.Y].length){
+          viewPort.x = currentLevel.map[actorPosition.Y].length - Configs.VIEWPORT_SIZE;
+        }
+      }
+      // fixes Y
+      if(currentLevel.map.length > Configs.VIEWPORT_SIZE){
+        //if(viewPort.y < 0) viewPort.y = 0;
+        if(viewPort.y + Configs.VIEWPORT_SIZE > currentLevel.map.length){
+          viewPort.y = currentLevel.map.length - Configs.VIEWPORT_SIZE;
+        }
+      }
     }
 
     var Map = {
@@ -197,7 +228,8 @@ define(
             for(portalIdx = 0; portalIdx < nextLevel.portals.length; ++portalIdx){
               var portal = nextLevel.portals[portalIdx];
               if(portal.portal.linkId == portalLink){
-                //
+                viewPort.x = 0;
+                viewPort.y = 0;
                 currentLevel = nextLevel;
                 actor.initialize({
                   x: portal.x, y: portal.y

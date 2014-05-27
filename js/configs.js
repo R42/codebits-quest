@@ -14,7 +14,10 @@ define([], function(){
 
     GAME_MODE_POPUP: 1,
 
-    VIEWPORT_SIZE: 20
+    VIEWPORT_SIZE: 20,
+
+    VIEWPORT_SAFE_ZONE: 5
+
   }
 
   return Configs;
