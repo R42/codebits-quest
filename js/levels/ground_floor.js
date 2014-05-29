@@ -5,9 +5,10 @@ define(
     'genericObject',
     'stage',
     'genericPopup',
-    'portal'
+    'portal',
+    'configs'
   ],
-  function($, Clock, GenericObject, Stage, Popup, Portal){
+  function($, Clock, GenericObject, Stage, Popup, Portal, Configs){
 
     // Create a water vending machine
     var goWater = new GenericObject({
@@ -16,7 +17,7 @@ define(
           blader: 10
         },
       price:10,
-      color:'rgb(0,206,209)',
+      color: Configs.WATER_VENDING_MACHINE_COLOR,
       description: 'A water vending machine. Money: -10. Thirst: -20. Blader +10',
       popup: new Popup('A popup', [])
     });
@@ -27,7 +28,7 @@ define(
         blader: 0
       },
       price: 0,
-      color: 'rgb(255, 215, 0)',
+      color: Configs.WC_COLOR,
       description: 'A place to take a leak. Blader: 0'
     });
 
@@ -35,7 +36,7 @@ define(
     var goFood = new GenericObject({
       actions: { hunger: 0 },
       price: 0,
-      color: 'rgb(139, 69, 19)',
+      color: Configs.FOOD_VENDING_MACHINE_COLOR,
       description: 'The food corner. All your burguers and pizzas are belong to here.'
     });
 

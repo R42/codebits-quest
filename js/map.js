@@ -10,7 +10,7 @@ define(
   ],
   function($, Clock, GenericObject, Stage, Popup, Configs, Levels){
 
-    var element = $('<canvas>').prop('width', 400). prop('height', 400)[0];
+    var element = $('<canvas>').prop('width', Configs.CANVAS_SIZE_WIDTH). prop('height', Configs.CANVAS_SIZE_HEIGHT)[0];
 
     var actor;
 
@@ -57,7 +57,7 @@ define(
 
       position = getViewPortRelativePosition(position);
 
-      drawBox(context, position, 'rgb(0,0,255)');
+      drawBox(context, position, Configs.MAIN_ACTOR_COLOR);
     }
 
     function drawTerrain(terrain, context, position){
@@ -81,10 +81,10 @@ define(
           color = Configs.WALL_COLOR;
           break;
         case 'o':
-          color = 'rgb(255,0,0)';
+          color = Configs.TABLE_COLOR;
           break;
         case 'c':
-          color = 'rgb(0,255,0)';
+          color = Configs.CHAIR_COLOR;
       }
 
       drawBox(context, position, color);
@@ -165,17 +165,15 @@ define(
 
       if(viewPort.x < 0) viewPort.x = 0;
       if(viewPort.y < 0) viewPort.y = 0;
-      
+
       // fixes X
       if(currentLevel.map[actorPosition.Y].length > Configs.VIEWPORT_SIZE){
-        //if(viewPort.x < 0) viewPort.x = 0;
         if(viewPort.x + Configs.VIEWPORT_SIZE > currentLevel.map[actorPosition.Y].length){
           viewPort.x = currentLevel.map[actorPosition.Y].length - Configs.VIEWPORT_SIZE;
         }
       }
       // fixes Y
       if(currentLevel.map.length > Configs.VIEWPORT_SIZE){
-        //if(viewPort.y < 0) viewPort.y = 0;
         if(viewPort.y + Configs.VIEWPORT_SIZE > currentLevel.map.length){
           viewPort.y = currentLevel.map.length - Configs.VIEWPORT_SIZE;
         }

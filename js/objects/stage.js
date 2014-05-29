@@ -9,7 +9,7 @@ define(['userStats', 'clock', 'configs'], function(UserStats, Clock, Configs) {
     },
 
     draw: function(context, position) {
-      context.fillStyle = 'rgb(75, 0, 130)';
+      context.fillStyle = Configs.STAGES_COLOR;
       context.fillRect(
         position.X * Configs.BLOCK_SIZE,
         position.Y * Configs.BLOCK_SIZE,

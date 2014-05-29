@@ -13,7 +13,7 @@ define([
 
   var tickCount = 0;
 
-  var gameMode;
+  var gameState;
 
   var currentPopup;
 
@@ -47,10 +47,10 @@ define([
 
     if(typeof userLocation === 'object'){
       if(userLocation.popup){
-        gameMode = Configs.GAME_MODE_POPUP;
+        gameState = Configs.GAME_MODE_POPUP;
         currentPopup = userLocation.popup;
         userLocation.popup.doAction(function(){
-          gameMode = Configs.GAME_MODE_PLAYING;
+          gameState = Configs.GAME_MODE_PLAYING;
         });
       }
       else if(typeof userLocation.getType === 'function' &&
@@ -83,7 +83,7 @@ define([
   }
 
   function updateWorldClock(){
-    if(gameMode === Configs.GAME_MODE_PLAYING){
+    if(gameState === Configs.GAME_MODE_PLAYING){
       Clock.addTime(Configs.SECONDS_PER_FRAME);
     }
   }
@@ -91,7 +91,7 @@ define([
   function drawWorld(){
     Map.draw();
     UserStats.draw();
-    if(gameMode === Configs.GAME_MODE_PLAYING){
+    if(gameState === Configs.GAME_MODE_PLAYING){
       GameInformation.draw();
     }
   }
@@ -99,7 +99,7 @@ define([
   function frame(){
     var key;
 
-    if(gameMode == Configs.GAME_MODE_PLAYING){
+    if(gameState == Configs.GAME_MODE_PLAYING){
       // process inputs
       if(bufferedInput){
         if(bufferedInput === 'action'){
@@ -114,7 +114,7 @@ define([
       updateWorldClock();
       updateUserStats();
 
-    } else if(gameMode == Configs.GAME_MODE_POPUP){
+    } else if(gameState == Configs.GAME_MODE_POPUP){
       if(bufferedInput){
         currentPopup.keyPressed(bufferedInput);
         bufferedInput = null;
@@ -133,7 +133,7 @@ define([
 
     initialize: function(){
 
-      gameMode = Configs.GAME_MODE_PLAYING;
+      gameState = Configs.GAME_MODE_PLAYING;
 
       User.initialize({x: 1, y: 1});
 

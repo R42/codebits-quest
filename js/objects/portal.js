@@ -15,7 +15,7 @@ define([
       },
 
       draw: function(context, position) {
-        context.fillStyle = '6699FF';
+        context.fillStyle = Configs.PORTAL_COLOR;
         context.fillRect(
           position.X * Configs.BLOCK_SIZE,
           position.Y * Configs.BLOCK_SIZE,
