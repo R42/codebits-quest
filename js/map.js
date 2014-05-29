@@ -90,6 +90,10 @@ define(
       drawBox(context, position, color);
     }
 
+    function clearCanvas(context){
+      context.clearRect(0, 0, Configs.CANVAS_SIZE_WIDTH, Configs.CANVAS_SIZE_HEIGHT);
+    }
+
     function loadLevels(){
 
       levels = {
@@ -189,6 +193,8 @@ define(
 
         draw: function(){
           var context = element.getContext('2d');
+
+          clearCanvas(context);
 
           updateViewPort();
 
